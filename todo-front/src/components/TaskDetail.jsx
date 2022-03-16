@@ -8,10 +8,10 @@ const TaskDatail = (props) => {
   useEffect(() => {
     if (props.task.id) {
       const editTask = props.task;
-      editTask.date = useDate(props.task.date, "time", "int", "-");
+      editTask.date = useDate(parseInt(props.task.date), "time", "int", "-");
+      console.log("data", editTask);
       setFormData(editTask);
     }
-    console.log("teste", props.task);
     setFormData(props.task);
   }, []);
 
@@ -75,19 +75,19 @@ const TaskDatail = (props) => {
                 }
               />
             </Form.Group>
-
-            <Button
-              variant="primary"
-              onClick={() => {
-                props.createOrUpdateTask(formData);
-              }}
-            >
-              Save
-            </Button>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={props.onHide}>Close</Button>
+          <Button
+            variant="primary"
+            onClick={() => {
+              props.createOrUpdateTask(formData);
+              props.onHide();
+            }}
+          >
+            Save
+          </Button>
+          <Button variant="info" onClick={props.onHide}>Close</Button>
         </Modal.Footer>
       </Modal>
     </div>

@@ -4,13 +4,15 @@ import "./App.css";
 import { TODO_LIST_ABI, TODO_LIST_ADDRESS } from "./config";
 import TodoList from "./components/TodoList.jsx";
 //import myTasks from "./components/tasks";
-import useDate from './hooks/useDate'
+import useDate from "./hooks/useDate";
+import useDateToday from "./hooks/useDateToday";
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
-  const [account, setAccount] = useState(""); 
+  const [account, setAccount] = useState("");
   const [loading, setLoading] = useState(true);
-  const [todoList, setTodoList] = useState(); 
+  const [todoList, setTodoList] = useState();
+  const [dateTasks, setDateTasks] = useState(useDateToday("int"));
 
   useEffect(() => {
     setup();
@@ -23,24 +25,30 @@ const App = () => {
     const todoList = new web3.eth.Contract(TODO_LIST_ABI, TODO_LIST_ADDRESS);
     setTodoList(todoList);
     const taskCount = await todoList.methods.taskCount().call();
-    const getTasks = []
+    const getTasks = [];
     for (var i = 1; i <= taskCount; i++) {
       const task = await todoList.methods.tasks(i).call();
-      getTasks.push(task)
-    } 
+      console.log("tasks", task, dateTasks);
+      if (task.title) getTasks.push(task);
+    }
     setTasks(getTasks);
     setLoading(false);
   };
 
   const createTask = (task) => {
-    console.log('createTask')
-      setLoading(true);
-     todoList.methods
-      .createTask(task.title, task.description, task.priority, task.status, task.date)
+    setLoading(true);
+    todoList.methods
+      .createTask(
+        task.title,
+        task.description,
+        task.priority,
+        task.status,
+        task.date
+      )
       .send({ from: account })
       .once("receipt", (receipt) => {
-        setLoading(false);
-      }); 
+        setup();
+      });
   };
 
   const toggleCompleted = (taskId) => {
@@ -48,29 +56,46 @@ const App = () => {
     todoList.methods
       .toggleCompleted(taskId)
       .send({ from: account })
-      .once("receipt", (receipt) => {
-        setLoading(false);
-      }); 
+      .once("receipt", () => {
+        setup();
+      });
   };
 
-  const updateTask = (task)=>{
-    console.log('updateTask')
+  const updateTask = (task) => {
+    todoList.methods
+      .updateTask(
+        task.id,
+        task.title,
+        task.description,
+        task.priority,
+        task.status,
+        task.date
+      )
+      .send({ from: account })
+      .once("receipt", (receipt) => {
+        setup();
+      });
+  };
 
-  }
+  const createOrUpdateTask = (task) => {
+    const newDate = useDate(task.date, "int", "time", "-");
+    const taskSave = task;
+    taskSave.date = newDate;
+    console.log("task", taskSave);
+    if (taskSave.id) return updateTask(taskSave);
+    taskSave.status = "0";
+    createTask(taskSave);
+  };
 
-  const createOrUpdateTask = (task)=>{
-    const newDate = useDate(task.date, 'int', 'time', '-')
-    const taskSave = task
-    taskSave.date = newDate 
-    console.log('task', taskSave)
-    if(taskSave.id) return updateTask(taskSave)
-    taskSave.status = "0"
-    createTask(taskSave)
-  }
-
-  const removeTask = (taskId)=>{
-    console.log('removeTask', taskId)
-  }
+  const removeTask = (taskId) => {
+    setLoading(true);
+    todoList.methods
+      .removeTask(taskId)
+      .send({ from: account })
+      .once("receipt", () => {
+        setLoading(false);
+      });
+  };
 
   return (
     <div>
@@ -100,6 +125,7 @@ const App = () => {
               </div>
             ) : (
               <TodoList
+                dateTasks={dateTasks}
                 tasks={tasks}
                 createTask={createTask}
                 toggleCompleted={toggleCompleted}
