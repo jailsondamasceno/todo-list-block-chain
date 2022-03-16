@@ -2,17 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import useDate from "../hooks/useDate";
 
-interface TaskProps {
-  id?: string;
-  title: string;
-  description: string;
-  priority: string;
-  status?: string;
-  date: string;
-  walletAddress?: string;
-}
-
-const TaskDatail: React.FC<TaskProps> = (props) => {
+const TaskDatail = (props) => {
   const [formData, setFormData] = useState({});
 
   useEffect(() => {

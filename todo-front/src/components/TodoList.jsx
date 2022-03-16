@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { ListGroup, Button } from "react-bootstrap";
 
-import TaskDatail from "./TaskDetail.tsx";
+import TaskDatail from "./TaskDetail.jsx";
 
 const TodoList = (props) => {
   const [modalShow, setModalShow] = useState(false);

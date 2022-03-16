@@ -1,6 +1,6 @@
-export const TODO_LIST_ADDRESS = '0x5bE1AAcd5a5832A55390D617e7B5AEd79bc7f167'
+export const TODO_LIST_ADDRESS = '0xDB233014b540dEdF5C74D17248d5434e3D09F963'
 
-export const TODO_LIST_ABI = [
+export const TODO_LIST_ABI =[
   {
     "constant": true,
     "inputs": [
@@ -16,12 +16,28 @@ export const TODO_LIST_ABI = [
         "type": "uint256"
       },
       {
-        "name": "content",
+        "name": "title",
         "type": "string"
       },
       {
-        "name": "completed",
-        "type": "bool"
+        "name": "description",
+        "type": "string"
+      },
+      {
+        "name": "walletAddress",
+        "type": "address"
+      },
+      {
+        "name": "priority",
+        "type": "string"
+      },
+      {
+        "name": "status",
+        "type": "string"
+      },
+      {
+        "name": "date",
+        "type": "uint256"
       }
     ],
     "payable": false,
@@ -61,18 +77,38 @@ export const TODO_LIST_ABI = [
       },
       {
         "indexed": false,
-        "name": "content",
+        "name": "title",
         "type": "string"
       },
       {
         "indexed": false,
-        "name": "completed",
-        "type": "bool"
+        "name": "description",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "name": "walletAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "priority",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "name": "status",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "name": "date",
+        "type": "uint256"
       }
     ],
     "name": "TaskCreated",
     "type": "event",
-    "signature": "0x05d0fb833127fc08168556d0e7ca9554fc3f6bc843b3b7d2bf1c35aea6bab660"
+    "signature": "0x30a94aa78def75bc7da69119c96b92000e40c5fc7c95145b17bdcd727b3efec0"
   },
   {
     "anonymous": false,
@@ -84,20 +120,36 @@ export const TODO_LIST_ABI = [
       },
       {
         "indexed": false,
-        "name": "completed",
-        "type": "bool"
+        "name": "status",
+        "type": "string"
       }
     ],
     "name": "TaskCompleted",
     "type": "event",
-    "signature": "0xe21fa966ca5cd02748c0752352d18c48165e61cb55b4c29cccf924b5a95fcff1"
+    "signature": "0x7e6ffc29fe63759579d96a0457a8f2e08339aca345bd469f59dc2e61f82a5aeb"
   },
   {
     "constant": false,
     "inputs": [
       {
-        "name": "_content",
+        "name": "_title",
         "type": "string"
+      },
+      {
+        "name": "_description",
+        "type": "string"
+      },
+      {
+        "name": "_priority",
+        "type": "string"
+      },
+      {
+        "name": "_status",
+        "type": "string"
+      },
+      {
+        "name": "_date",
+        "type": "uint256"
       }
     ],
     "name": "createTask",
@@ -105,7 +157,42 @@ export const TODO_LIST_ABI = [
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0x111002aa"
+    "signature": "0x91ed7c57"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_id",
+        "type": "uint256"
+      },
+      {
+        "name": "_title",
+        "type": "string"
+      },
+      {
+        "name": "_description",
+        "type": "string"
+      },
+      {
+        "name": "_priority",
+        "type": "string"
+      },
+      {
+        "name": "_status",
+        "type": "string"
+      },
+      {
+        "name": "_date",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateTask",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x4494936b"
   },
   {
     "constant": false,
@@ -121,5 +208,20 @@ export const TODO_LIST_ABI = [
     "stateMutability": "nonpayable",
     "type": "function",
     "signature": "0x455f5024"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_id",
+        "type": "uint256"
+      }
+    ],
+    "name": "removeTask",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xc3084117"
   }
 ]

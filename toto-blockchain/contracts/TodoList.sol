@@ -1,4 +1,5 @@
 pragma solidity ^0.5.0;
+//pragma experimental ABIEncoderV2;
 
 contract TodoList {
   uint public taskCount = 0;
@@ -7,6 +8,7 @@ contract TodoList {
     uint id;
     string title;
     string description;
+    address walletAddress;
     string priority;
     string status;
     uint date;
@@ -18,6 +20,7 @@ contract TodoList {
     uint id,
     string title,
     string description,
+    address walletAddress,
     string priority,
     string status,
     uint  date
@@ -29,20 +32,20 @@ contract TodoList {
   );
 
   constructor() public {
- createTask(
-      "My first task",
-      "My first task description",
-      "hight",
-      "0",
-      block.timestamp
-    );
+ 
   }
 
-  function createTask( string memory _title,  string memory _description,  string memory _priority, string memory _status, uint  _date) public {
+  function createTask( string memory _title,  string memory _description, string memory _priority, string memory _status, uint  _date) public {
     taskCount ++;
-    tasks[taskCount] = Task(taskCount, _title, _description, _priority, _status, _date);
-    emit TaskCreated(taskCount, _title,_description,_priority,_status, _date);
+    tasks[taskCount] = Task(taskCount, _title, _description, msg.sender, _priority, _status, _date);
+    emit TaskCreated(taskCount, _title,_description, msg.sender, _priority,_status, _date);
   }
+
+  function updateTask(uint _id, string memory _title,  string memory _description, string memory _priority, string memory _status, uint  _date) public {
+    tasks[_id] = Task(_id, _title, _description, msg.sender, _priority, _status, _date);
+    emit TaskCreated(_id, _title, _description, msg.sender, _priority,_status, _date);
+  }
+  
 
   function toggleCompleted(uint _id) public {
     Task memory _task = tasks[_id];
@@ -50,5 +53,9 @@ contract TodoList {
     tasks[_id] = _task;
     emit TaskCompleted(_id, _task.status);
   }
+
+ function removeTask(uint _id) public {
+     delete tasks[_id];
+    }
 
 }
