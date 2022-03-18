@@ -37,8 +37,7 @@ const TodoList = (props) => {
             type="date"
             id="meeting-time"
             name="meeting-time"
-              value={props.dateTasks}
-            /* onChange={(e) => setFormData({ ...formData, date: e.target.value })}  */
+            onChange={(e) => props.filterTasks(e.target.value)}
           />
         </div>
         <ListGroup>

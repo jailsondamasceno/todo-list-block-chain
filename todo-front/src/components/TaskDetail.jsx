@@ -9,7 +9,6 @@ const TaskDatail = (props) => {
     if (props.task.id) {
       const editTask = props.task;
       editTask.date = useDate(parseInt(props.task.date), "time", "int", "-");
-      console.log("data", editTask);
       setFormData(editTask);
     }
     setFormData(props.task);
