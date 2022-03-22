@@ -18,8 +18,10 @@ const App = () => {
 
   const setup = async () => {
     const web3 = new Web3(Web3.givenProvider || "http://127.0.0.1:7545");
+  //  const web3 = new Web3(Web3.givenProvider || "https://ropsten.infura.io/v3/2db8af2804624133a0602d1d611bc700");
 
     const accounts = await web3.eth.getAccounts();
+    console.log('teste', accounts)
     setAccount(accounts[0]);
 
     const todoList = new web3.eth.Contract(TODO_LIST_ABI, TODO_LIST_ADDRESS);
