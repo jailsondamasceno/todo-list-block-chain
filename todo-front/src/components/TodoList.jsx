@@ -2,7 +2,8 @@ import React, { useState } from "react";
 
 import { ListGroup, Button } from "react-bootstrap";
 
-import TaskDatail from "./TaskDetail.tsx";
+import TaskDatail from "./TaskDetail.jsx";
+import useDate from "../hooks/useDate";
 
 const TodoList = (props) => {
   const [modalShow, setModalShow] = useState(false);
@@ -20,16 +21,25 @@ const TodoList = (props) => {
       )}
 
       <div id="content">
-        <Button
-        className="mb-5"
-          variant="primary"
-          onClick={() => {
-            setTaskToShow({});
-            setModalShow(true);
-          }}
-        >
-          New task
-        </Button>
+        <div className="row mb-5">
+          <Button
+            className="mx-1"
+            variant="primary"
+            onClick={() => {
+              setTaskToShow({});
+              setModalShow(true);
+            }}
+          >
+            New task
+          </Button>
+          <input
+            className="mx-1"
+            type="date"
+            id="meeting-time"
+            name="meeting-time"
+            onChange={(e) => props.filterTasks(e.target.value)}
+          />
+        </div>
         <ListGroup>
           {props.tasks.map((task, key) => {
             return (
@@ -49,14 +59,18 @@ const TodoList = (props) => {
                     defaultChecked={task.status === "1"}
                     onClick={(e) => {
                       e.stopPropagation();
-                      props.toggleCompleted();
+                      props.toggleCompleted(task.id);
                     }}
                   />
+                  <small className="mx-2">
+                    {useDate(parseInt(task.date), "time", "int", "-")}
+                  </small>
+
                   <span className="content">{task.title}</span>
                   <Button
                     onClick={(e) => {
                       e.stopPropagation();
-                      props.removeTask(task.id)
+                      props.removeTask(task.id);
                     }}
                     size="sm"
                     className="ml-3 mx-1"

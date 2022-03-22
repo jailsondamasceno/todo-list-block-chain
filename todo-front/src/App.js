@@ -1,78 +1,114 @@
 import React, { useEffect, useState } from "react";
-/* import Web3 from "web3"; */
+import Web3 from "web3";
 import "./App.css";
-/* import { TODO_LIST_ABI, TODO_LIST_ADDRESS } from "./config"; */
-import TodoList from "./components/TodoList.tsx";
-import myTasks from "./components/tasks";
-import useDate from './hooks/useDate'
+import { TODO_LIST_ABI, TODO_LIST_ADDRESS } from "./config";
+import TodoList from "./components/TodoList.jsx";
+import useDate from "./hooks/useDate";
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
-  /*   const [account, setAccount] = useState(""); */
+  const [account, setAccount] = useState("");
   const [loading, setLoading] = useState(true);
-  /*   const [todoList, setTodoList] = useState(); */
+  const [todoList, setTodoList] = useState();
+  const [tasksToShow, setTasksToShow] = useState([]);
 
   useEffect(() => {
     setup();
   }, []);
 
   const setup = async () => {
-    setTasks(myTasks.tasks);
+    const web3 = new Web3(Web3.givenProvider || "http://127.0.0.1:7545");
+  //  const web3 = new Web3(Web3.givenProvider || "https://ropsten.infura.io/v3/2db8af2804624133a0602d1d611bc700");
 
-
-    /*     const web3 = new Web3(Web3.givenProvider || "http://127.0.0.1:7545");
     const accounts = await web3.eth.getAccounts();
+    console.log('teste', accounts)
     setAccount(accounts[0]);
+
     const todoList = new web3.eth.Contract(TODO_LIST_ABI, TODO_LIST_ADDRESS);
     setTodoList(todoList);
+
     const taskCount = await todoList.methods.taskCount().call();
+    const getTasks = [];
+
     for (var i = 1; i <= taskCount; i++) {
-      console.log("engegeiughui", i);
       const task = await todoList.methods.tasks(i).call();
-      setTasks([...tasks, task]);
-    } */
+      if (task.title) getTasks.push(task);
+    }
+    setTasks(getTasks);
+    setTasksToShow(getTasks);
     setLoading(false);
   };
 
-  const createTask = (content) => {
-    console.log('createTask')
+  const filterTasks= (date) => {
+    const startTime = new Date(date)  
+    const endTime = new Date(date).getTime() + 86400000
+    const tasksFiltered = tasks.filter((t) => {
+      return parseInt(t.date) >  startTime && parseInt(t.date) < endTime ;
+    });
+    setTasksToShow(tasksFiltered)
+  };
 
-   // this.setLoading(true);
-   /*  todoList.methods
-      .createTask(content)
+  const createTask = (task) => {
+    setLoading(true);
+    todoList.methods
+      .createTask(
+        task.title,
+        task.description,
+        task.priority,
+        task.status,
+        task.date
+      )
       .send({ from: account })
       .once("receipt", (receipt) => {
-        setLoading(false);
-      }); */
+        setup();
+      });
   };
 
   const toggleCompleted = (taskId) => {
     setLoading(true);
-   /*  todoList.methods
+    todoList.methods
       .toggleCompleted(taskId)
       .send({ from: account })
-      .once("receipt", (receipt) => {
-        setLoading(false);
-      }); */
+      .once("receipt", () => {
+        setup();
+      });
   };
 
-  const updateTask = (task)=>{
-    console.log('updateTask')
+  const updateTask = (task) => {
+    todoList.methods
+      .updateTask(
+        task.id,
+        task.title,
+        task.description,
+        task.priority,
+        task.status,
+        task.date
+      )
+      .send({ from: account })
+      .once("receipt", (receipt) => {
+        setup();
+      });
+  };
 
-  }
+  const createOrUpdateTask = (task) => {
+    const newDate = useDate(task.date, "int", "time", "-");
+    const taskSave = task;
+    taskSave.date = newDate;
+    console.log("task", taskSave);
+    if (taskSave.id) return updateTask(taskSave);
+    taskSave.status = "0";
+    createTask(taskSave);
+  };
 
-  const createOrUpdateTask = (task)=>{
-    const newDate = useDate(task.date, 'int', 'time', '-')
-    const taskSave = task
-    taskSave.date = newDate 
-    console.log('task', taskSave)
-    if(taskSave.id) return updateTask(taskSave)
-    createTask(taskSave)
-  }
-
-  const removeTask = (taskId)=>{
-    console.log('removeTask', taskId)
-  }
+  const removeTask = (taskId) => {
+    setLoading(true);
+    todoList.methods
+      .removeTask(taskId)
+      .send({ from: account })
+      .once("receipt", () => {
+        setLoading(false);
+      });
+  };
 
   return (
     <div>
@@ -102,11 +138,12 @@ const App = () => {
               </div>
             ) : (
               <TodoList
-                tasks={tasks}
+                tasks={tasksToShow}
                 createTask={createTask}
                 toggleCompleted={toggleCompleted}
                 createOrUpdateTask={createOrUpdateTask}
                 removeTask={removeTask}
+                filterTasks={filterTasks}
               />
             )}
           </main>
